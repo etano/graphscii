@@ -1,27 +1,26 @@
 from __future__ import print_function
-from drawille import Canvas
 from math import sqrt
+from drawille import Canvas
+import networkx as nx
 
 class Node(object):
-    """Class to draw a box
+    """Node class
 
        Attributes:
-           x0 (int): Leftmost x-position
-           y0 (int): Topmost y-position
-           width (int): Width
-           height (int): Height
+           x (int): x-position
+           y (int): y-position
            label (str): Label
+           att (dict(str, val)): Dictionary of attributes
     """
 
-    def __init__(self, x0, y0, width, height, label=""):
-        self.x0 = x0
-        self.y0 = y0
-        self.width = width
-        self.height = height
+    def __init__(self, x, y, label=""):
+        self.x = x
+        self.y = y
         self.label = label
+        self.att = {}
 
 class Edge(object):
-    """Class to draw an edge between Nodes
+    """Edge class
 
        Attributes:
            n0 (Node): Starting node
@@ -48,59 +47,88 @@ class Graph(object):
         self.edges = []
         self.c = Canvas()
 
+        self.node_width = 30
+        self.node_height = 10
+        self.max_x = 200
+        self.max_y = 100
+
     def add_node(self, label):
-        self.nodes[label] = Node((len(self.nodes)*20) % 40, len(self.nodes)*20, 10, 10, label)
+        self.nodes[label] = Node(0, 0, label)
 
     def add_edge(self, label0, label1, label=""):
+        if not (label0 in self.nodes): self.add_node(label0)
+        if not (label1 in self.nodes): self.add_node(label1)
         self.edges.append(Edge(self.nodes[label0], self.nodes[label1], label))
 
     def draw_node(self, n):
-        for i in range(n.width):
-            self.c.set(n.x0 + i, n.y0)
-            self.c.set(n.x0 + i, n.y0 + n.height)
-        for i in range(n.height):
-            self.c.set(n.x0, n.y0 + i)
-            self.c.set(n.x0 + n.width, n.y0 + i)
-        self.c.set_text(n.x0 + (n.width // 2), n.y0 + (n.height // 2), n.label)
+        half_width = self.node_width // 2
+        half_height = self.node_height // 2
+        for i in range(self.node_width):
+            self.c.set((n.x - half_width) + i, n.y - half_height)
+            self.c.set((n.x - half_width) + i, n.y + half_height)
+        for i in range(self.node_height):
+            self.c.set(n.x - half_width, (n.y - half_height) + i)
+            self.c.set(n.x + half_width, (n.y - half_height) + i)
+        label = n.label
+        for key in n.att:
+            label += ', '+str(n.att[key])
+        self.c.set_text(n.x - half_width + 3, n.y, label)
 
     def draw_edge(self, e):
-        x0 = e.n0.x0 + (e.n0.width // 2)
-        x1 = e.n1.x0 + (e.n1.width // 2)
-        y0 = e.n0.y0 + (e.n0.height // 2)
-        y1 = e.n1.y0 + (e.n1.height // 2)
-        x_diff = x1-x0
-        y_diff = y1-y0
+        x_diff = e.n1.x - e.n0.x
+        y_diff = e.n1.y - e.n0.y
         l = sqrt(x_diff**2 + y_diff**2)
         m = (y_diff / x_diff) if x_diff else 0
         dx = x_diff / l if l else 0
         dy = y_diff / l if l else 0
+        half_width = self.node_width // 2
+        half_height = self.node_height // 2
         for i in range(int(l)):
-            x = x0 + i*dx
-            y = y0 + i*dy
+            x = e.n0.x + i*dx
+            y = e.n0.y + i*dy
             if (
-                abs(x-x0) > (e.n0.width // 2) and
-                abs(x-x1) > (e.n1.width // 2)
+                abs(x - e.n0.x) > half_width and
+                abs(x - e.n1.x) > half_width
             ) or (
-                abs(y-y0) > (e.n0.height // 2) and
-                abs(y-y1) > (e.n1.height // 2)
+                abs(y - e.n0.y) > half_height and
+                abs(y - e.n1.y) > half_height
             ): self.c.set(x, y)
-        self.c.set_text(x0 + (l // 2)*dx, y0 + (l // 2)*dy, e.label)
+        self.c.set_text(e.n0.x + (l // 2)*dx, e.n0.y + (l // 2)*dy, e.label)
 
     def draw(self):
-        # TODO: draw to minimize edge crossings
+        # TODO: Remove networkx
+        G = nx.Graph()
+        for edge in self.edges:
+            G.add_edge(edge.n0.label, edge.n1.label)
+        pos = nx.spring_layout(G)
+
+        # Draw
         for label in self.nodes:
-            self.draw_node(self.nodes[label])
+            node = self.nodes[label]
+            node.x = float(pos[label][0] * self.max_x)
+            node.y = float(pos[label][1] * self.max_y)
+            self.draw_node(node)
         for edge in self.edges:
             self.draw_edge(edge)
         print(self.c.frame())
 
 g = Graph()
-g.add_node('n0')
-g.add_node('n1')
-g.add_node('n2')
-g.add_node('n3')
-g.add_node('n4')
-g.add_edge('n0', 'n1', 'e0')
-g.add_edge('n0', 'n2', 'e1')
-g.add_edge('n2', 'n1', 'e2')
+g.add_edge('Alaska', 'Canada')
+g.add_edge('Alaska', 'Kamchatka')
+g.add_edge('Alaska', 'Western US')
+g.add_edge('Western US', 'Eastern US')
+g.add_edge('Western US', 'Canada')
+g.add_edge('Western US', 'Mexico')
+g.add_edge('Eastern US', 'Canada')
+g.add_edge('Eastern US', 'Mexico')
+g.add_edge('Eastern US', 'Quebec')
+g.add_edge('Canada', 'Quebec')
+g.add_edge('Quebec', 'Iceland')
+
+# Add armies
+for label in g.nodes:
+    node = g.nodes[label]
+    node.att['owner'] = 'Ethan'
+    node.att['armies'] = 13
+
 g.draw()
