@@ -37,7 +37,6 @@ To draw a graph, create a Graph object, add nodes and edges, and invoke the `dra
 
 .. image:: https://github.com/etano/graphscii/blob/master/examples/simple.png
     :alt: Simple triangle graph
-    :width: 50%
     :align: center
 
 For more examples, see the `examples` directory.
