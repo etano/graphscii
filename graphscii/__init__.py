@@ -30,9 +30,9 @@ class Node(object):
         if pos[1] < 0 or pos[1] > 1: raise ValueError('y position must be between 0 and 1')
         if len(shape) != 2: raise ValueError('shape must be of length 2')
         self.label = label
-        self.att = att
-        self.pos = pos
-        self.shape = shape
+        self.att = dict(att)
+        self.pos = list(pos)
+        self.shape = list(shape)
         self.show_label = show_label
         self.show_att = show_att
 
@@ -62,7 +62,7 @@ class Edge(object):
         self.n0 = n0
         self.n1 = n1
         self.label = label
-        self.att = att
+        self.att = dict(att)
         self.show_label = show_label
         self.show_att = show_att
 
@@ -88,12 +88,12 @@ class Graph(object):
         """
         self.max_x = max_x
         self.max_y = max_y
-        self.default_shape = default_shape
+        self.default_shape = list(default_shape)
         self.nodes = {}
         self.edges = []
         self.c = Canvas()
 
-    def add_node(self, label, att={}, pos=[0, 0], shape=None):
+    def add_node(self, label, att={}, pos=[0, 0], shape=None, show_label=True, show_att=False):
         """Add a node
 
            Args:
@@ -101,12 +101,14 @@ class Graph(object):
                att (dict(str, val)): Dictionary of attributes for the node
                pos (list(float)): x, y position between 0 and 1
                shape (list(float)): Shape of node
+               show_label (bool): Whether or not to show the label
+               show_att (bool): Whether or not to show the attributes
         """
         if not shape:
             shape = self.default_shape
-        self.nodes[label] = Node(label, att, pos, shape)
+        self.nodes[label] = Node(label, att, pos, shape, show_label, show_att)
 
-    def add_edge(self, label0, label1, label='', att={}):
+    def add_edge(self, label0, label1, label='', att={}, show_label=True, show_att=False):
         """Add an edge
 
            Args:
@@ -114,10 +116,12 @@ class Graph(object):
                label1 (str): Label for the ending node
                label (str): Label for the edge
                att (dict(str, val)): Dictionary of attributes for the edge
+               show_label (bool): Whether or not to show the label
+               show_att (bool): Whether or not to show the attributes
         """
         if not (label0 in self.nodes): raise ValueError(label0+' does not exist.')
         if not (label1 in self.nodes): raise ValueError(label1+' does not exist.')
-        self.edges.append(Edge(self.nodes[label0], self.nodes[label1], label, att))
+        self.edges.append(Edge(self.nodes[label0], self.nodes[label1], label, att, show_label, show_att))
 
     def draw_node(self, n):
         """Add a node to the canvas
