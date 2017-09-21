@@ -3,7 +3,7 @@ graphscii
 
 Print ASCII graphs in the terminal.
 
-.. image:: https://raw.githubusercontent.com/etano/graphscii/examples/risk.png
+.. image:: https://github.com/etano/graphscii/blob/master/examples/risk.png
     :alt: Risk graph
     :width: 100%
     :align: center
@@ -35,7 +35,7 @@ To draw a graph, create a Graph object, add nodes and edges, and invoke the `dra
     g.add_edge('n2', 'n0', label='e2')
     g.draw()
 
-.. image:: https://raw.githubusercontent.com/etano/graphscii/examples/simple.png
+.. image:: https://github.com/etano/graphscii/blob/master/examples/simple.png
     :alt: Simple triangle graph
     :width: 50%
     :align: center
