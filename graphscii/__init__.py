@@ -75,7 +75,6 @@ class Graph(object):
            default_shape (list(float)): Default node shape
            nodes (list(Node)): List of nodes
            edges (list(Edge)): List of edges
-           c (drawille.Canvas): Canvas object
     """
 
     def __init__(self, max_x=300, max_y=135, default_shape=[10, 10]):
@@ -91,7 +90,6 @@ class Graph(object):
         self.default_shape = list(default_shape)
         self.nodes = {}
         self.edges = []
-        self.c = Canvas()
 
     def add_node(self, label, att={}, pos=[0, 0], shape=None, show_label=True, show_att=False):
         """Add a node
@@ -123,10 +121,11 @@ class Graph(object):
         if not (label1 in self.nodes): raise ValueError(label1+' does not exist.')
         self.edges.append(Edge(self.nodes[label0], self.nodes[label1], label, att, show_label, show_att))
 
-    def draw_node(self, n):
+    def draw_node(self, c, n):
         """Add a node to the canvas
 
            Args:
+               c (drawille.Canvas): Canvas object
                n (Node): Node to draw
         """
         x = float(n.pos[0] * self.max_x)
@@ -134,23 +133,24 @@ class Graph(object):
         half_width = n.shape[0] // 2
         half_height = n.shape[1] // 2
         for i in range(n.shape[0]):
-            self.c.set((x - half_width) + i, y - half_height)
-            self.c.set((x - half_width) + i, y + half_height)
+            c.set((x - half_width) + i, y - half_height)
+            c.set((x - half_width) + i, y + half_height)
         for i in range(n.shape[1]):
-            self.c.set(x - half_width, (y - half_height) + i)
-            self.c.set(x + half_width, (y - half_height) + i)
+            c.set(x - half_width, (y - half_height) + i)
+            c.set(x + half_width, (y - half_height) + i)
         label = ''
         if n.show_label:
             label += n.label
         if n.show_att:
             for key in n.att:
                 label += ', %s: %s'%(key, str(n.att[key]))
-        self.c.set_text(x - half_width + 3, y, label)
+        c.set_text(x - half_width + 3, y, label)
 
-    def draw_edge(self, e):
+    def draw_edge(self, c, e):
         """Add an edge to the canvas
 
            Args:
+               c (drawille.Canvas): Canvas object
                e (Edge): Edge to draw
         """
         x0 = float(e.n0.pos[0] * self.max_x)
@@ -175,20 +175,21 @@ class Graph(object):
             ) or (
                 abs(y - y0) > half_height0 and
                 abs(y - y1) > half_height1
-            ): self.c.set(x, y)
+            ): c.set(x, y)
         label = ''
         if e.show_label:
             label += e.label
         if e.show_att:
             for key in n.att:
                 label += ', %s: %s'%(key, str(n.att[key]))
-        self.c.set_text(x0 + (l // 2)*dx, y0 + (l // 2)*dy, label)
+        c.set_text(x0 + (l // 2)*dx, y0 + (l // 2)*dy, label)
 
     def draw(self):
         """Draw the graph
         """
+        c = Canvas()
         for node in self.nodes.itervalues():
-            self.draw_node(node)
+            self.draw_node(c, node)
         for edge in self.edges:
-            self.draw_edge(edge)
-        print(self.c.frame())
+            self.draw_edge(c, edge)
+        print(c.frame())
