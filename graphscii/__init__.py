@@ -73,7 +73,7 @@ class Graph(object):
            max_x (int): Maximum horizontal canvas size
            max_y (int): Maximum vertical canvas size
            default_shape (list(float)): Default node shape
-           nodes (list(Node)): List of nodes
+           nodes (dict(str, Node)): Dictionary of nodes
            edges (list(Edge)): List of edges
     """
 
