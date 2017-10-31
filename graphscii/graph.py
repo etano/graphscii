@@ -1,7 +1,6 @@
 from __future__ import print_function
 from drawille import Canvas
 from math import sqrt
-# from graphscii import Edge, Node
 from graphscii.edge import Edge
 from graphscii.node import Node
 
