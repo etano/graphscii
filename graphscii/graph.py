@@ -4,6 +4,7 @@ from math import sqrt
 from graphscii.edge import Edge
 from graphscii.node import Node
 
+
 class Graph(object):
     """Graph class
 
@@ -29,7 +30,9 @@ class Graph(object):
         self.nodes = {}
         self.edges = []
 
-    def add_node(self, label, att={}, pos=[0, 0], shape=None, show_label=True, show_att=False):
+    def add_node(
+        self, label, att={}, pos=[0, 0], shape=None, show_label=True, show_att=False
+    ):
         """Add a node
 
            Args:
@@ -44,7 +47,9 @@ class Graph(object):
             shape = self.default_shape
         self.nodes[label] = Node(label, att, pos, shape, show_label, show_att)
 
-    def add_edge(self, label0, label1, label='', att={}, show_label=True, show_att=False):
+    def add_edge(
+        self, label0, label1, label="", att={}, show_label=True, show_att=False
+    ):
         """Add an edge
 
            Args:
@@ -55,9 +60,15 @@ class Graph(object):
                show_label (bool): Whether or not to show the label
                show_att (bool): Whether or not to show the attributes
         """
-        if not (label0 in self.nodes): raise ValueError(label0+' does not exist.')
-        if not (label1 in self.nodes): raise ValueError(label1+' does not exist.')
-        self.edges.append(Edge(self.nodes[label0], self.nodes[label1], label, att, show_label, show_att))
+        if not (label0 in self.nodes):
+            raise ValueError(label0 + " does not exist.")
+        if not (label1 in self.nodes):
+            raise ValueError(label1 + " does not exist.")
+        self.edges.append(
+            Edge(
+                self.nodes[label0], self.nodes[label1], label, att, show_label, show_att
+            )
+        )
 
     def draw_node(self, c, n):
         """Add a node to the canvas
@@ -76,12 +87,12 @@ class Graph(object):
         for i in range(n.shape[1]):
             c.set(x - half_width, (y - half_height) + i)
             c.set(x + half_width, (y - half_height) + i)
-        label = ''
+        label = ""
         if n.show_label:
             label += n.label
         if n.show_att:
             for key in n.att:
-                label += ', %s: %s'%(key, str(n.att[key]))
+                label += ", %s: %s" % (key, str(n.att[key]))
         c.set_text(x - half_width + 3, y, label)
 
     def draw_edge(self, c, e):
@@ -101,26 +112,23 @@ class Graph(object):
         half_height1 = e.n1.shape[1] // 2
         x_diff = x1 - x0
         y_diff = y1 - y0
-        l = sqrt(x_diff**2 + y_diff**2)
+        l = sqrt(x_diff ** 2 + y_diff ** 2)  # noqa
         dx = x_diff / l if l else 0
         dy = y_diff / l if l else 0
         for i in range(int(l)):
-            x = x0 + i*dx
-            y = y0 + i*dy
-            if (
-                abs(x - x0) > half_width0 and
-                abs(x - x1) > half_width1
-            ) or (
-                abs(y - y0) > half_height0 and
-                abs(y - y1) > half_height1
-            ): c.set(x, y)
-        label = ''
+            x = x0 + i * dx
+            y = y0 + i * dy
+            if (abs(x - x0) > half_width0 and abs(x - x1) > half_width1) or (
+                abs(y - y0) > half_height0 and abs(y - y1) > half_height1
+            ):
+                c.set(x, y)
+        label = ""
         if e.show_label:
             label += e.label
         if e.show_att:
             for key in n.att:
-                label += ', %s: %s'%(key, str(n.att[key]))
-        c.set_text(x0 + (l // 2)*dx, y0 + (l // 2)*dy, label)
+                label += ", %s: %s" % (key, str(n.att[key]))
+        c.set_text(x0 + (l // 2) * dx, y0 + (l // 2) * dy, label)
 
     def draw(self):
         """Draw the graph
