@@ -126,8 +126,8 @@ class Graph(object):
         if e.show_label:
             label += e.label
         if e.show_att:
-            for key in n.att:
-                label += ", %s: %s" % (key, str(n.att[key]))
+            for key in e.att:
+                label += ", %s: %s" % (key, str(e.att[key]))
         c.set_text(x0 + (l // 2) * dx, y0 + (l // 2) * dy, label)
 
     def draw(self):
