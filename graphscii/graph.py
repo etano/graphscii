@@ -2,8 +2,8 @@ from __future__ import print_function
 from future.utils import itervalues
 from drawille import Canvas
 from math import sqrt
-from graphscii.edge import Edge
-from graphscii.node import Node
+from .edge import Edge
+from .node import Node
 
 class Graph(object):
     """Graph class
