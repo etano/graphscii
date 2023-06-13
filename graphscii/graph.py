@@ -1,8 +1,9 @@
 from __future__ import print_function
+from future.utils import itervalues
 from drawille import Canvas
 from math import sqrt
-from graphscii.edge import Edge
-from graphscii.node import Node
+from .edge import Edge
+from .node import Node
 
 
 class Graph(object):
@@ -134,7 +135,7 @@ class Graph(object):
         """Draw the graph
         """
         c = Canvas()
-        for node in self.nodes.values():
+        for node in itervalues(self.nodes):
             self.draw_node(c, node)
         for edge in self.edges:
             self.draw_edge(c, edge)

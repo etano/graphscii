@@ -1,3 +1,3 @@
-from graphscii.graph import Graph
+from .graph import Graph
 
 __all__ = ["Graph"]
